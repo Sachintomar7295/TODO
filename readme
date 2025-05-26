@@ -1,0 +1,47 @@
+Authentication
+
+POST /api/auth/register - Register new user
+
+POST /api/auth/login - Login user (returns JWT token)
+
+Tasks (Require Authorization header with Bearer token)
+
+POST /api/tasks - Create new task
+
+GET /api/tasks - Get all user's tasks
+
+PATCH /api/tasks/:id - Update task
+
+DELETE /api/tasks/:id - Delete task
+
+
+Register a user:
+POST http://localhost:5000/api/auth/register
+Body (JSON):
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+
+Login to get JWT token:
+POST http://localhost:5000/api/auth/login
+Body (JSON):
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+
+Use the token in subsequent requests (Add to Headers):
+
+Authorization: Bearer <your_jwt_token>
+
+
+Create task:
+
+POST http://localhost:5000/api/tasks
+Body (JSON):
+{
+  "description": "Buy groceries"
+}
