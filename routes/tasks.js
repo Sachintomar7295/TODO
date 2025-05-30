@@ -1,55 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const Task = require('../models/Task');
+const Task = require('../models/task');
+const authMiddleware = require('../middleware/auth');
 
-// Create Task
-router.post('/', async (req, res) => {
+// नया todo add करने के लिए POST route
+router.post('/', authMiddleware, async (req, res) => {
   try {
-    const task = new Task({ ...req.body, owner: req.user._id });
-    await task.save();
-    res.status(201).send(task);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
+    const { description } = req.body;
+    if (!description) {
+      return res.status(400).json({ error: 'Description जरूरी है' });
+    }
 
-// Get All Tasks
-router.get('/', async (req, res) => {
-  try {
-    const tasks = await Task.find({ owner: req.user._id });
-    res.send(tasks);
-  } catch (err) {
-    res.status(500).send();
-  }
-});
-
-// Update Task
-router.patch('/:id', async (req, res) => {
-  try {
-    const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, owner: req.user._id },
-      req.body,
-      { new: true }
-    );
-    if (!task) return res.status(404).send();
-    res.send(task);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-// Delete Task
-router.delete('/:id', async (req, res) => {
-  try {
-    const task = await Task.findOneAndDelete({ 
-      _id: req.params.id, 
-      owner: req.user._id 
+    const task = new Task({
+      description,
+      owner: req.user._id,
+      completed: false
     });
-    if (!task) return res.status(404).send();
-    res.send(task);
-  } catch (err) {
-    res.status(500).send();
+
+    await task.save();
+    res.status(201).json(task); // नया task वापस भेजो
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
 module.exports = router;
+
+
+
+//new joda he
